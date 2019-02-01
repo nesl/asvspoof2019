@@ -1,0 +1,89 @@
+API for MV2DF (Multivariate, twice differentiable function)
+
+N.B. There is a problem with singles! Matlab seems not to work when wrapping single data in function handles.
+There are two workarounds:
+1. Don't use singles anywhere.
+2. Disable the JIT compiler: > feature('accel','off');
+
+
+
+This note describes the contract/API/interface for the class of MATLAB 
+FUNCTION, which we denote as 'MV2DF'. All of these 
+MATLAB FUNCTIONS have the same input and output specifications. In what follows we 
+shall use the following terminology:
+
+MF: MATLAB FUNCTION (or m-file).
+FH: MATLAB FUNCTION HANDLE
+function: a mathematical function, for example f:R^m -> R^n.
+
+Summary:
+An MV2DF is a MF which represents a multivariate, twice differentiable 
+function, f:R^m ->R^n. It computes the function value and also makes available
+a FH which can compute a number of first and second-order partial 
+derivatives. 
+
+Specification:
+An MV2DF has the following form:
+  function [y,deriv] = mv2df(w,params);
+
+Inputs:
+  params: zero or more parameters, further defining the function, but
+  not part of the differentiable input.
+
+  w: represents the input from R^m. This input may be in one of the 
+     following forms:
+
+     - empty: If w=[], mv2df returns a single FH output, representing 
+              itself, with 'params' fixed and 'w' variable:
+                     y = @(w) mv2df(w,params).
+
+     - FH: If w is a function handle representing another MV2DF 
+           for some function g(x), then mv2df returns a single 
+           FH output, representing the MV2DF for the function
+           combination f(g(x)).
+
+     - m-vector: In this case two outputs are returned:
+                 -- y: numerical n-vector function value, y = f(w).      
+                 -- deriv: a FH which computes various derivatives at
+                           input w, to be described below.
+
+
+Outputs: 
+
+  y: as described above, can be either n-vector y = f(w), or a FH.
+
+  deriv: is a FH that takes a single input, dy, in R^n, with the
+  following signature: 
+
+           [g,hess,linear] = deriv(dy)
+
+  Here g is a vector in R^m; hess is a function handle and 
+  linear is a boolean that is true if the hessian is zero when f 
+  is linear (or affine).
+
+  Let J represent the n-by-m Jacobian matrix of f at w and let H_k 
+  represent the m-by-m Hessian matrix of the k'th output of f at w.
+  Then:
+  
+    g = J'*dy, 
+
+  and hess has the following signature:
+
+    [h,r] = hess(du), with du in R^m and where
+    
+    h = sum_k dy_k * H_k * du
+    r = J*du
+    
+
+    Note:
+    (i) In the linear case, h=[]
+    (ii) h = hess(du) should not compute J*du
+
+
+
+
+
+
+
+
+

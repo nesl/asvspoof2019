@@ -1,0 +1,4 @@
+N.B. There is a problem with singles! Matlab seems not to work when wrapping single data in function handles.
+There are two workarounds:
+1. Don't use singles anywhere.
+2. Disable the JIT compiler: > feature('accel','off');

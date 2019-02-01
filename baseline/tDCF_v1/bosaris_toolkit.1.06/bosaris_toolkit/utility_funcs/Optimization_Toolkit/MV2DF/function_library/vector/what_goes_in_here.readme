@@ -1,0 +1,4 @@
+This directory is for MV2DF implementations of vectorized scalar functions.
+If f: R -> R, then these MV2DF implementations represent functions of the 
+form F: R^N -> R^N, where the function f is applied to each element, just
+as MATLAB does when you call e.g. exp with a vector argument.
