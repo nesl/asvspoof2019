@@ -1,0 +1,10 @@
+__pycache__
+**/__pycache__
+
+# IPython
+.ipynb_checkpoints
+
+# Data folders
+data_logical
+data_physical
+
