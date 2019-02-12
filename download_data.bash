@@ -1,6 +1,6 @@
 #! /bin/bash
 echo 'Downloading logical access dataset'
-test -d data_logical || mdkir data_logical
+test -d data_logical || mkdir data_logical
 cd data_logical
 
 test -f ASVspoof2019_LA_train_v1.tar || wget -c ftp://ftp.asvspoof.org/incoming/ASVspoof2019_LA_train_v1.tar
