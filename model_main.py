@@ -2,6 +2,7 @@
     Author: Moustafa Alzantot (malzantot@ucla.edu)
     All rights reserved.
 """
+import argparse
 import sys
 import data_utils
 import numpy as np
@@ -12,9 +13,11 @@ import librosa
 
 import torch
 from torch import nn 
-
 from tensorboardX import SummaryWriter
 
+from scipy.optimize import brentq
+from scipy.interpolate import interp1d
+from sklearn.metrics import roc_curve
 def pad(x, max_len=64000):
     x_len = x.shape[0]
     if x_len >= max_len:
@@ -82,7 +85,8 @@ class ConvModel(nn.Module):
 def evaluate_accuracy(data_loader, model, device):
     num_correct = 0.0
     num_total = 0.0
-    for batch_x, batch_y in train_loader:
+    model.eval()
+    for batch_x, batch_y in data_loader:
         batch_size = batch_x.size(0)
         num_total += batch_size
         batch_x =batch_x.to(device)
@@ -91,12 +95,40 @@ def evaluate_accuracy(data_loader, model, device):
         batch_pred = (batch_out > 0.0).type(torch.float32)
         num_correct += (batch_pred == batch_y).sum(dim=0).item()
     return 100 * (num_correct / num_total)
-        
+
+def eval_eer(data_loader, model, device):
+    model.eval()
+    num_correct = 0.0
+    num_total = 0.0
+    model.eval()
+    true_y = []
+    pred_score = []
+    for batch_x, batch_y in data_loader:
+        batch_size = batch_x.size(0)
+        num_total += batch_size
+        batch_x =batch_x.to(device)
+        batch_y = batch_y.view(-1, 1).type(torch.float32).to(device)
+        true_y.append(batch_y.data.cpu().numpy().ravel())
+
+        batch_out = model(batch_x)
+        batch_score = torch.sigmoid(batch_out).data.cpu().numpy().ravel()
+        pred_score.append(batch_score)
+        batch_pred = (batch_out > 0.0).type(torch.float32)
+        num_correct += (batch_pred == batch_y).sum(dim=0).item()
+    pred_score = np.concatenate(pred_score)
+    true_y = np.concatenate(true_y)
+    # From: https://yangcha.github.io/EER-ROC/
+    fpr,tpr, thresholds = roc_curve(true_y, pred_score)
+    eer = brentq(lambda x : 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
+    thresh = interp1d(fpr, thresholds)(eer)
+    return eer
+
 def train_epoch(data_loader, model, device):
     running_loss = 0
     num_correct = 0.0
     num_total = 0.0
     ii = 0
+    model.train()
     optim = torch.optim.Adam(model.parameters(), lr=0.001)
     weight = torch.FloatTensor([9.0]).to(device)
     criterion = nn.BCEWithLogitsLoss(pos_weight=weight)
@@ -121,19 +153,32 @@ def train_epoch(data_loader, model, device):
     return running_loss, train_accuracy
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser('ASVSpoof LA model')
+    parser.add_argument('--eval', action='store_true', default=False,
+        help='eval mode')
+    parser.add_argument('--model_path', type=str, default=None, help='Model checkpoint')
+
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.feature.mfcc(x, sr=16000),
         lambda x: Tensor(x)
         ])
+    args = parser.parse_args()
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform)
+    dev_loader = DataLoader(dev_set, batch_size=32, shuffle=True)
+    model = ConvModel().to(device)
+    print(args)
+    if args.eval:
+        assert args.model_path is not None, 'You must provide model checkpoint'
+        model.load_state_dict(torch.load(args.model_path))
+        print('Model loaded : {}'.format(args.model_path))
+        print('EER = {}'.format(eval_eer(dev_loader, model, device)))
+        sys.exit(0)
 
     train_set = data_utils.ASVDataset(is_train=True, transform=feature_transform)
-    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform)
     train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
-    dev_loader = DataLoader(dev_set, batch_size=32, shuffle=True)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     num_epochs = 100
-    model = ConvModel().to(device)
     writer = SummaryWriter('log')
     for epoch in range(num_epochs):
         running_loss, train_accuracy = train_epoch(train_loader, model, device) 
