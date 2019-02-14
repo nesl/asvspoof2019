@@ -45,7 +45,6 @@ class ResNetBlock(nn.Module):
         # x is (B x d_in x T)
         prev = x
         prev_mp = self.conv11(x)
-
         if not self.first:
             out = self.pre_bn(x)
             out = self.lrelu(out)
@@ -64,17 +63,20 @@ class ResNetBlock(nn.Module):
 class ConvModel(nn.Module):
     def __init__(self):
         super(ConvModel, self).__init__()
-        self.conv1 = nn.Conv1d(20, 16, 5)
-        self.conv2 = nn.Conv1d(16, 12, 5)
+        # self.conv1 = nn.Conv1d(12, 16, 5)
+        # self.conv2 = nn.Conv1d(16, 8, 5)
         self.lrelu = nn.LeakyReLU(0.01)
-        self.fc1 = nn.Linear(12*118, 128)
+        self.block1 = ResNetBlock(12, 16,  True)
+        self.block2 = ResNetBlock(16, 16,  True)
+        self.block3 = ResNetBlock(16, 16,  True)
+        self.fc1 = nn.Linear(16*32, 128)
         self.fc2 = nn.Linear(128, 1)
     
     def forward(self, x):
         batch_size = x.size(0)
-        out = self.conv1(x)
+        out = self.block1(x)
         out = self.lrelu(out)
-        out = self.conv2(out)
+        out = self.block2(out)
         out = self.lrelu(out)
         out = out.view(batch_size, -1)
         out = self.fc1(out)
@@ -157,15 +159,15 @@ if __name__ == '__main__':
     parser.add_argument('--eval', action='store_true', default=False,
         help='eval mode')
     parser.add_argument('--model_path', type=str, default=None, help='Model checkpoint')
-
+    parser.add_argument('--eval_size', type=int, default=None, help='size of dev dataset samples to use')
     feature_transform = transforms.Compose([
         lambda x: pad(x),
-        lambda x: librosa.feature.mfcc(x, sr=16000),
+        lambda x: librosa.feature.chroma_cqt(x, sr=16000),
         lambda x: Tensor(x)
         ])
     args = parser.parse_args()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform)
+    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform, sample_size=args.eval_size)
     dev_loader = DataLoader(dev_set, batch_size=32, shuffle=True)
     model = ConvModel().to(device)
     print(args)
