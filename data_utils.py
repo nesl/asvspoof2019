@@ -42,17 +42,17 @@ class ASVDataset(Dataset):
             select_idx = np.random.choice(len(self.files_meta), size=(sample_size,), replace=True).astype(np.int32)
             self.files_meta= [self.files_meta[x] for x in select_idx]
         data = list(map(self.read_file, self.files_meta))
-        self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
-        self.length = len(self.data_x)
         self.transform = transform
+        self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
+        if self.transform:
+            self.data_x = list(map(self.transform, self.data_x)) 
+        self.length = len(self.data_x)
 
     def __len__(self):
         return self.length
 
     def __getitem__(self, idx):
         x = self.data_x[idx]
-        if self.transform:
-            x = self.transform(x)
         y = self.data_y[idx]
         return x, y
 
