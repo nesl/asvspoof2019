@@ -7,6 +7,7 @@ import os
 import soundfile as sf
 import librosa
 from torch.utils.data import DataLoader, Dataset
+import numpy as np
 
 LOGICAL_DATA_ROOT = 'data_logical'
 
@@ -16,7 +17,7 @@ ASVFile = collections.namedtuple('ASVFile',
 
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
-    def __init__(self, data_root=LOGICAL_DATA_ROOT, transform=None, is_train=True):
+    def __init__(self, data_root=LOGICAL_DATA_ROOT, transform=None, is_train=True, sample_size=None):
         self.prefix = 'ASVspoof2019_LA'
         self.sys_id_dict = {
             '-': 0,  # bonafide speech
@@ -37,6 +38,9 @@ class ASVDataset(Dataset):
         self.protocols_fname = os.path.join(self.protocols_dir,
             'ASVspoof2019.LA.cm.{}.txt'.format(self.protocols_fname))
         self.files_meta = self.parse_protocols_file(self.protocols_fname)
+        if sample_size:
+            select_idx = np.random.choice(len(self.files_meta), size=(sample_size,), replace=True).astype(np.int32)
+            self.files_meta= [self.files_meta[x] for x in select_idx]
         data = list(map(self.read_file, self.files_meta))
         self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
         self.length = len(self.data_x)

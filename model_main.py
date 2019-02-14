@@ -61,16 +61,14 @@ class ResNetBlock(nn.Module):
 class ConvModel(nn.Module):
     def __init__(self):
         super(ConvModel, self).__init__()
-        self.conv1 = nn.Conv2d(1, 8, 5)
-        self.conv2 = nn.Conv2d(8, 8, 5)
+        self.conv1 = nn.Conv1d(20, 16, 5)
+        self.conv2 = nn.Conv1d(16, 12, 5)
         self.lrelu = nn.LeakyReLU(0.01)
-        self.fc1 = nn.Linear(8*12*118, 128)
+        self.fc1 = nn.Linear(12*118, 128)
         self.fc2 = nn.Linear(128, 1)
-        self.sigmoid = nn.Sigmoid()
     
     def forward(self, x):
         batch_size = x.size(0)
-        x = x.unsqueeze(dim=1)
         out = self.conv1(x)
         out = self.lrelu(out)
         out = self.conv2(out)
@@ -79,9 +77,8 @@ class ConvModel(nn.Module):
         out = self.fc1(out)
         out = self.lrelu(out)
         out = self.fc2(out)
-        out = self.sigmoid(out)
         return out
-
+        
 def evaluate_accuracy(data_loader, model, device):
     num_correct = 0.0
     num_total = 0.0
@@ -91,9 +88,37 @@ def evaluate_accuracy(data_loader, model, device):
         batch_x =batch_x.to(device)
         batch_y = batch_y.view(-1, 1).type(torch.float32).to(device)
         batch_out = model(batch_x)
-        batch_pred = (batch_out > 0.5).type(torch.float32)
+        batch_pred = (batch_out > 0.0).type(torch.float32)
         num_correct += (batch_pred == batch_y).sum(dim=0).item()
     return 100 * (num_correct / num_total)
+        
+def train_epoch(data_loader, model, device):
+    running_loss = 0
+    num_correct = 0.0
+    num_total = 0.0
+    ii = 0
+    optim = torch.optim.Adam(model.parameters(), lr=0.001)
+    weight = torch.FloatTensor([9.0]).to(device)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=weight)
+    for batch_x, batch_y in train_loader:
+        batch_size = batch_x.size(0)
+        num_total += batch_size
+        ii += 1
+        batch_x =batch_x.to(device)
+        batch_y = batch_y.view(-1, 1).type(torch.float32).to(device)
+        batch_out = model(batch_x)
+        batch_loss = criterion(batch_out, batch_y)
+        batch_pred = (batch_out > 0.0).type(torch.float32)
+        num_correct += (batch_pred == batch_y).sum(dim=0).item()
+        running_loss += (batch_loss.item() * batch_size)
+        if ii % 10 == 0:
+            sys.stdout.write('\r \t {:.2f}'.format((num_correct/num_total)*100))
+        optim.zero_grad()
+        batch_loss.backward()
+        optim.step()
+    running_loss /= num_total
+    train_accuracy = (num_correct/num_total)*100
+    return running_loss, train_accuracy
 
 if __name__ == '__main__':
     feature_transform = transforms.Compose([
@@ -104,39 +129,17 @@ if __name__ == '__main__':
 
     train_set = data_utils.ASVDataset(is_train=True, transform=feature_transform)
     dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform)
-    train_loader = DataLoader(train_set, batch_size=128, shuffle=True)
-    dev_loader = DataLoader(dev_set, batch_size=128, shuffle=True)
+    train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
+    dev_loader = DataLoader(dev_set, batch_size=32, shuffle=True)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     num_epochs = 100
     model = ConvModel().to(device)
-    criterion = nn.BCELoss()
-    optim = torch.optim.Adam(model.parameters(), lr=0.001)
     writer = SummaryWriter('log')
     for epoch in range(num_epochs):
-        running_loss = 0
-        num_correct = 0.0
-        num_total = 0.0
-        ii = 0
-        for batch_x, batch_y in train_loader:
-            batch_size = batch_x.size(0)
-            num_total += batch_size
-            ii += 1
-            batch_x =batch_x.to(device)
-            batch_y = batch_y.view(-1, 1).type(torch.float32).to(device)
-            batch_out = model(batch_x)
-            batch_loss = criterion(batch_out, batch_y)
-            batch_pred = (batch_out > 0.5).type(torch.float32)
-            num_correct += (batch_pred == batch_y).sum(dim=0).item()
-            running_loss += (batch_loss.item() * batch_size)
-            if ii % 10 == 0:
-                sys.stdout.write('\r \t {:.2f}'.format((num_correct/num_total)*100))
-            optim.zero_grad()
-            batch_loss.backward()
-            optim.step()
-        running_loss /= len(train_set)
-        train_accuracy = (num_correct/num_total)*100
+        running_loss, train_accuracy = train_epoch(train_loader, model, device) 
         valid_accuracy = evaluate_accuracy(dev_loader, model, device)
         writer.add_scalar('train_accuracy', train_accuracy, epoch)
         writer.add_scalar('valid_accuracy', valid_accuracy, epoch)
         writer.add_scalar('loss', running_loss, epoch)
         print('{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
+        torch.save(model.state_dict(), 'epoch_{}.pth'.format(epoch))
