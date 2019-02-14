@@ -111,6 +111,7 @@ if __name__ == '__main__':
     model = ConvModel().to(device)
     criterion = nn.BCELoss()
     optim = torch.optim.Adam(model.parameters(), lr=0.001)
+    writer = SummaryWriter('log')
     for epoch in range(num_epochs):
         running_loss = 0
         num_correct = 0.0
@@ -135,4 +136,7 @@ if __name__ == '__main__':
         running_loss /= len(train_set)
         train_accuracy = (num_correct/num_total)*100
         valid_accuracy = evaluate_accuracy(dev_loader, model, device)
+        writer.add_scalar('train_accuracy', train_accuracy, epoch)
+        writer.add_scalar('valid_accuracy', valid_accuracy, epoch)
+        writer.add_scalar('loss', running_loss, epoch)
         print('{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
