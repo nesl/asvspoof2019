@@ -57,7 +57,7 @@ class ASVDataset(Dataset):
         data_y = meta.key
         return data_x, float(data_y), meta.sys_id
     def _parse_line(self, line):
-        tokens = line.split(' ')
+        tokens = line.strip().split(' ')
         return ASVFile(speaker_id=tokens[0],
             file_name=os.path.join(self.files_dir, tokens[1] + '.flac'),
             sys_id=self.sys_id_dict[tokens[3]],
