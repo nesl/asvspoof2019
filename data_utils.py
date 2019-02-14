@@ -3,8 +3,10 @@
     All rights reserved.
 """
 import collections
-import soundfile as sf
 import os
+import soundfile as sf
+import librosa
+from torch.utils.data import DataLoader, Dataset
 
 LOGICAL_DATA_ROOT = 'data_logical'
 
@@ -12,9 +14,9 @@ LOGICAL_DATA_ROOT = 'data_logical'
 ASVFile = collections.namedtuple('ASVFile',
     ['speaker_id', 'file_name', 'sys_id', 'key'], verbose=False)
 
-class DataLoader(object):
+class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
-    def __init__(self, data_root, is_train=True):
+    def __init__(self, data_root=LOGICAL_DATA_ROOT, transform=None, is_train=True):
         self.prefix = 'ASVspoof2019_LA'
         self.sys_id_dict = {
             '-': 0,  # bonafide speech
@@ -38,11 +40,22 @@ class DataLoader(object):
         data = list(map(self.read_file, self.files_meta))
         self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
         self.length = len(self.data_x)
+        self.transform = transform
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, idx):
+        x = self.data_x[idx]
+        if self.transform:
+            x = self.transform(x)
+        y = self.data_y[idx]
+        return x, y
 
     def read_file(self, meta):
         data_x, sample_read = sf.read(meta.file_name)
         data_y = meta.key
-        return data_x, data_y, meta.sys_id
+        return data_x, float(data_y), meta.sys_id
     def _parse_line(self, line):
         tokens = line.split(' ')
         return ASVFile(speaker_id=tokens[0],
@@ -56,8 +69,8 @@ class DataLoader(object):
         return list(files_meta)
 
 if __name__ == '__main__':
-    train_loader = DataLoader(LOGICAL_DATA_ROOT, is_train=True)
-    assert train_loader.length == 25380, 'Incorrect size of training set.'
-    dev_loader = DataLoader(LOGICAL_DATA_ROOT, is_train=False)
-    assert dev_loader.length == 24844, 'Incorrect size of dev set.'
+    train_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=True)
+    assert len(train_loader) == 25380, 'Incorrect size of training set.'
+    dev_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=False)
+    assert len(dev_loader) == 24844, 'Incorrect size of dev set.'
 
