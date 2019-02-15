@@ -66,19 +66,18 @@ class ConvModel(nn.Module):
         #self.conv1 = nn.Conv1d(20, 16, 5)
         #self.conv2 = nn.Conv1d(16, 8, 5)
         self.lrelu = nn.LeakyReLU(0.01)
-        self.block1 = ResNetBlock(20, 16,  True)
+        self.block1 = ResNetBlock(32, 16,  True)
         self.block2 = ResNetBlock(16, 16,  False)
         self.block3 = ResNetBlock(16, 16,  False)
-        self.fc1 = nn.Linear(16*32, 128)
+        self.fc1 = nn.Linear(16*16, 128)
         #self.fc1 = nn.Linear(8*118, 128)
         self.fc2 = nn.Linear(128, 1)
     
     def forward(self, x):
         batch_size = x.size(0)
         out = self.block1(x)
-        #out = self.conv1(x)
-        #out = self.lrelu(out)
         out = self.block2(out)
+        out = self.block3(out)
         # out = self.conv2(out)
         out = self.lrelu(out)
         out = out.view(batch_size, -1)
@@ -165,8 +164,8 @@ if __name__ == '__main__':
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
-        # lambda x: librosa.feature.mfcc(x, sr=16000, n_mfcc=20),
-        lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
+        lambda x: librosa.feature.mfcc(x, sr=16000, n_mfcc=32),
+        #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])
     args = parser.parse_args()
@@ -192,5 +191,5 @@ if __name__ == '__main__':
         writer.add_scalar('train_accuracy', train_accuracy, epoch)
         writer.add_scalar('valid_accuracy', valid_accuracy, epoch)
         writer.add_scalar('loss', running_loss, epoch)
-        print('{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
+        print('\n{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
         torch.save(model.state_dict(), 'epoch_{}.pth'.format(epoch))
