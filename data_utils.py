@@ -38,14 +38,21 @@ class ASVDataset(Dataset):
         self.protocols_fname = os.path.join(self.protocols_dir,
             'ASVspoof2019.LA.cm.{}.txt'.format(self.protocols_fname))
         self.files_meta = self.parse_protocols_file(self.protocols_fname)
+        self.cache_fname = 'cache_{}.npy'.format(self.dset_name)
         if sample_size:
             select_idx = np.random.choice(len(self.files_meta), size=(sample_size,), replace=True).astype(np.int32)
             self.files_meta= [self.files_meta[x] for x in select_idx]
         data = list(map(self.read_file, self.files_meta))
         self.transform = transform
-        self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
-        if self.transform:
-            self.data_x = list(map(self.transform, self.data_x)) 
+        if os.path.exists(self.cache_fname):
+            self.data_x, self.data_y, self.data_sysid = np.loadz(self.cache_fname)
+             print('Dataset loaded from cache ', self.cache_fname)
+        else:
+            self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
+            if self.transform:
+                self.data_x = list(map(self.transform, self.data_x)) 
+             np.savez(self.cache_fname, self.data_x, self.data_y, self.data_sysid)
+             print('Dataset saved to cache ', self.cache_fname)
         self.length = len(self.data_x)
 
     def __len__(self):
