@@ -4,6 +4,7 @@
 """
 import argparse
 import sys
+import os
 import data_utils
 import numpy as np
 from torch import Tensor
@@ -70,6 +71,10 @@ class ConvModel(nn.Module):
         self.block3 = ResNetBlock(32, 32,  False)
         self.block4= ResNetBlock(32, 32, False)
         self.block5= ResNetBlock(32, 32, False)
+        self.block6 = ResNetBlock(32, 32, False)
+        self.block7 = ResNetBlock(32, 32, False)
+        self.block8 = ResNetBlock(32, 32, False)
+        self.block9 = ResNetBlock(32, 32, False)
         self.lrelu = nn.LeakyReLU(0.01)
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
@@ -82,12 +87,16 @@ class ConvModel(nn.Module):
         x = x.unsqueeze(dim=1)
         out = self.conv1(x)
         out = self.block1(out)
-        out = self.mp(out)
         out = self.block2(out)
-        out = self.mp(out)
         out = self.block3(out)
+        out = self.mp(out)
         out = self.block4(out)
         out = self.block5(out)
+        out = self.block6(out)
+        out = self.mp(out)
+        out = self.block7(out)
+        out = self.block8(out)
+        out = self.block9(out)
         out = self.bn(out)
         out = self.lrelu(out)
         out = self.mp(out)
@@ -113,7 +122,7 @@ def evaluate_accuracy(data_loader, model, device):
         num_correct += (batch_pred == batch_y).sum(dim=0).item()
     return 100 * (num_correct / num_total)
 
-def eval_eer(dataset, model, device):
+def produce_evaluation_file(dataset, model, device, save_path):
     data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
     num_correct = 0.0
     num_total = 0.0
@@ -137,18 +146,18 @@ def eval_eer(dataset, model, device):
         sys_id_list.extend([dataset.sysid_dict_inv[s.item()] for s in list(batch_meta[3])])
         score_list.extend(batch_score.tolist())
 
-    with open('tDCF_python_v1/scores/output.txt', 'w') as fh:
+    with open(save_path, 'w') as fh:
         for f, s, k, cm in zip(fname_list, sys_id_list, key_list, score_list):
             fh.write('{} {} {} {}\n'.format(f, s, k, cm))
-    print('Result saved')
+    print('Result saved to {}'.format(save_path))
 
-def train_epoch(data_loader, model, device):
+def train_epoch(data_loader, model, lr, device):
     running_loss = 0
     num_correct = 0.0
     num_total = 0.0
     ii = 0
     model.train()
-    optim = torch.optim.Adam(model.parameters(), lr=0.0001)
+    optim = torch.optim.Adam(model.parameters(), lr=lr)
     weight = torch.FloatTensor([1.0, 9.0]).to(device)
     criterion = nn.NLLLoss(weight=weight)
     for batch_x, batch_y, batch_meta in train_loader:
@@ -182,7 +191,22 @@ if __name__ == '__main__':
     parser.add_argument('--eval', action='store_true', default=False,
         help='eval mode')
     parser.add_argument('--model_path', type=str, default=None, help='Model checkpoint')
-    parser.add_argument('--eval_size', type=int, default=None, help='size of dev dataset samples to use')
+    parser.add_argument('--eval_output', type=str, default=None, help='Path to save the evaluation result')
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--num_epochs', type=int, default=100)
+    parser.add_argument('--lr', type=float, default=0.0001)
+    parser.add_argument('--comment', type=str, default=None, help='Comment to describe the saved mdoel')
+
+    if not os.path.exists('models'):
+        os.mkdir('models')
+    args = parser.parse_args()
+    model_tag = 'model_{}_{}_{}'.format(args.num_epochs, args.batch_size, args.lr)
+    if args.comment:
+        model_tag = model_tag + '_{}'.format(args.comment)
+    model_save_path = os.path.join('models', model_tag)
+
+    if not os.path.exists(model_save_path):
+        os.mkdir(model_save_path)
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
@@ -190,28 +214,28 @@ if __name__ == '__main__':
         #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])
-    args = parser.parse_args()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform, sample_size=args.eval_size)
-    dev_loader = DataLoader(dev_set, batch_size=32, shuffle=True)
+    dev_set = data_utils.ASVDataset(is_train=False, transform=feature_transform)
+    dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
     model = ConvModel().to(device)
     print(args)
     if args.eval:
+        assert args.eval_output is not None, 'You must provide an output path'
         assert args.model_path is not None, 'You must provide model checkpoint'
         model.load_state_dict(torch.load(args.model_path))
         print('Model loaded : {}'.format(args.model_path))
-        print('EER = {}'.format(eval_eer(dev_set, model, device)))
+        produce_evaluation_file(dev_set, model, device, args.eval_output)
         sys.exit(0)
 
     train_set = data_utils.ASVDataset(is_train=True, transform=feature_transform)
-    train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
-    num_epochs = 100
-    writer = SummaryWriter('log')
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+    num_epochs = args.num_epochs
+    writer = SummaryWriter('logs/{}'.format(model_tag))
     for epoch in range(num_epochs):
-        running_loss, train_accuracy = train_epoch(train_loader, model, device) 
+        running_loss, train_accuracy = train_epoch(train_loader, model, args.lr, device) 
         valid_accuracy = evaluate_accuracy(dev_loader, model, device)
         writer.add_scalar('train_accuracy', train_accuracy, epoch)
         writer.add_scalar('valid_accuracy', valid_accuracy, epoch)
         writer.add_scalar('loss', running_loss, epoch)
         print('\n{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
-        torch.save(model.state_dict(), 'epoch_{}.pth'.format(epoch))
+        torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
