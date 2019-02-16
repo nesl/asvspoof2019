@@ -25,3 +25,6 @@ Epoch 90:  EER = 4.004, t-DCF = 0.133
 EPOCH=98, EER= 3.33, t-DCF = 0.116
 Epcoh 99:  EER = 2.23 , t-DCF = 0.06
 
+Old Model results: EER = 2.87, t-DCF = 0.08
+
+Fusion between epoch 99, and old model results : EER =1.91, and t-DCF = 0.054

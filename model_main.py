@@ -219,11 +219,14 @@ if __name__ == '__main__':
     dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
     model = ConvModel().to(device)
     print(args)
+
+    if args.model_path:
+        model.load_state_dict(torch.load(args.model_path))
+        print('Model loaded : {}'.format(args.model_path))
+
     if args.eval:
         assert args.eval_output is not None, 'You must provide an output path'
         assert args.model_path is not None, 'You must provide model checkpoint'
-        model.load_state_dict(torch.load(args.model_path))
-        print('Model loaded : {}'.format(args.model_path))
         produce_evaluation_file(dev_set, model, device, args.eval_output)
         sys.exit(0)
 
