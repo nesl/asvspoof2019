@@ -9,7 +9,7 @@ import soundfile as sf
 import librosa
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
-
+from joblib import Parallel, delayed
 LOGICAL_DATA_ROOT = 'data_logical'
 
 
@@ -49,7 +49,8 @@ class ASVDataset(Dataset):
             data = list(map(self.read_file, self.files_meta))
             self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
             if self.transform:
-                self.data_x = list(map(self.transform, self.data_x)) 
+                # self.data_x = list(map(self.transform, self.data_x)) 
+                self.data_x = Parallel(n_jobs=10, prefer='threads')(delayed(self.transform)(x) for x in self.data_x)
             torch.save((self.data_x, self.data_y, self.data_sysid, self.files_meta), self.cache_fname)
             print('Dataset saved to cache ', self.cache_fname)
         if sample_size:
