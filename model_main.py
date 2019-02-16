@@ -69,6 +69,7 @@ class ConvModel(nn.Module):
         self.block2 = ResNetBlock(32, 32,  False)
         self.block3 = ResNetBlock(32, 32,  False)
         self.block4= ResNetBlock(32, 32, False)
+        self.block5= ResNetBlock(32, 32, False)
         self.lrelu = nn.LeakyReLU(0.01)
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
@@ -86,6 +87,7 @@ class ConvModel(nn.Module):
         out = self.mp(out)
         out = self.block3(out)
         out = self.block4(out)
+        out = self.block5(out)
         out = self.bn(out)
         out = self.lrelu(out)
         out = self.mp(out)
@@ -146,7 +148,7 @@ def train_epoch(data_loader, model, device):
     num_total = 0.0
     ii = 0
     model.train()
-    optim = torch.optim.Adam(model.parameters(), lr=0.001)
+    optim = torch.optim.Adam(model.parameters(), lr=0.0001)
     weight = torch.FloatTensor([1.0, 9.0]).to(device)
     criterion = nn.NLLLoss(weight=weight)
     for batch_x, batch_y, batch_meta in train_loader:
