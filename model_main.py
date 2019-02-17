@@ -79,7 +79,7 @@ class ConvModel(nn.Module):
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(32*10, 128)
+        self.fc1 = nn.Linear(128, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -180,8 +180,15 @@ def train_epoch(data_loader, model, lr, device):
     train_accuracy = (num_correct/num_total)*100
     return running_loss, train_accuracy
 
+def get_mfcc(x):
+    s = librosa.core.stft(x, n_fft=3200, win_length=3200, hop_length=1600)
+    a = np.abs(s)**2
+    melspect = librosa.feature.melspectrogram(S=a)
+    mfcc = librosa.feature.mfcc(S=librosa.power_to_db(melspect))
+    return mfcc
+
 def compute_mfcc_feats(x):
-    mfcc = librosa.feature.mfcc(x, sr=16000, n_mfcc=24)
+    mfcc = get_mfcc(x)
     delta = librosa.feature.delta(mfcc)
     feats = np.concatenate((mfcc, delta), axis=0)
     return feats
