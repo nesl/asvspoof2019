@@ -1,0 +1,151 @@
+clear; close all; clc;
+
+% add required libraries to the path
+addpath(genpath('LFCC'));
+addpath(genpath('CQCC_v1.0'));
+addpath(genpath('GMM'));
+addpath(genpath('bosaris_toolkit'));
+addpath(genpath('tDCF_v1'));
+
+% set here the experiment to run (access and feature type)
+access_type = 'LA'; % LA for logical or PA for physical
+feature_type = 'CQCC'; % LFCC or CQCC
+
+% set paths to the wave files and protocols
+
+% TODO: in this code we assume that the data follows the directory structure:
+%
+% ASVspoof_root/
+%   |- LA
+%      |- ASVspoof2019_LA_dev_asv_scores_v1.txt
+% 	   |- ASVspoof2019_LA_dev_v1/
+% 	   |- ASVspoof2019_LA_protocols_v1/
+% 	   |- ASVspoof2019_LA_train_v1/
+%   |- PA
+%      |- ASVspoof2019_PA_dev_asv_scores_v1.txt
+%      |- ASVspoof2019_PA_dev_v1/
+%      |- ASVspoof2019_PA_protocols_v1/
+%      |- ASVspoof2019_PA_train_v1/
+
+% pathToASVspoof2019Data = '/path/to/ASVspoof_root/';
+pathToASVspoof2019Data = '/home/ziqi/Desktop/asvspoof2019-master';
+
+% pathToDatabase = fullfile(pathToASVspoof2019Data, access_type);
+pathToDatabase = fullfile(pathToASVspoof2019Data, 'data_logical');
+trainProtocolFile = fullfile(pathToDatabase, horzcat('ASVspoof2019_', access_type, '_protocols'), horzcat('ASVspoof2019.', access_type, '.cm.train.trn.txt'));
+devProtocolFile = fullfile(pathToDatabase, horzcat('ASVspoof2019_', access_type, '_protocols'), horzcat('ASVspoof2019.', access_type, '.cm.dev.trl.txt'));
+
+
+%% Feature extraction for training data
+
+% read train protocol
+fileID = fopen(trainProtocolFile);
+protocol = textscan(fileID, '%s%s%s%s%s');
+fclose(fileID);
+
+% get file and label lists
+filelist = protocol{2};
+sys_id = protocol{4};
+key = protocol{5};
+
+% get indices of genuine and spoof files
+% bonafideIdx = find(strcmp(key,'bonafide'));
+% spoofIdx = find(strcmp(key,'spoof'));
+
+disp('Extracting features for training data...');
+dset_name = 'train';
+cache_file_name = fullfile(['cache_' dset_name '.mat']);
+
+parfor i=1:length(filelist)
+    % extract CQCC feature
+    filePath = fullfile(pathToDatabase,['ASVspoof2019_' access_type '_train/flac'],[filelist{i} '.flac']);
+    [x,fs] = audioread(filePath);
+    
+    % padding to make data-length = 64000(4s)
+    
+    
+    if strcmp(feature_type,'LFCC')
+        [stat,delta,double_delta] = extract_lfcc(x,fs,20,512,20);
+        trainFeatureCell{i} = [stat delta double_delta]';
+    elseif strcmp(feature_type,'CQCC')
+        trainFeatureCell{i} = cqcc(x, fs, 96, fs/2, fs/2^10, 16, 29, 'ZsdD');
+    end
+    % convert sys_id
+    switch sys_id{i}
+        case '-'
+            sys_id{i} = 0
+        case 'SS_1'
+            sys_id{i} = 1 
+        case 'SS_2'
+            sys_id{i} = 2
+        case 'SS_4'
+            sys_id{i} = 3
+        case 'US_1'
+            sys_id{i} = 4
+        case 'VC_1'
+            sys_id{i} = 5
+        case 'VC_4'
+            sys_id{i} = 6
+        otherwise
+            disp('error converting system id!')
+    end
+end
+% convert key
+data_y = strcmp(key,'bonafide');
+data_x = transpose(trainFeatureCell);
+save(cache_file_name, 'filelist', 'data_x', 'data_y', 'sys_id', '-v7.3')
+
+%% Feature extraction and scoring of development data
+
+% read dev protocol
+fileID = fopen(devProtocolFile);
+protocol = textscan(fileID, '%s%s%s%s%s');
+fclose(fileID);
+
+% get file and label lists
+filelist = protocol{2};
+sys_id = protocol{4};
+key = protocol{5};
+
+% get indices of genuine and spoof files
+% bonafideIdx = find(strcmp(key,'bonafide'));
+% spoofIdx = find(strcmp(key,'spoof'));
+
+disp('Extracting features for development data...');
+dset_name = 'dev';
+cache_file_name = fullfile(['cache_' dset_name '.mat']);
+
+parfor i=1:length(filelist)
+    % extract CQCC feature
+    filePath = fullfile(pathToDatabase,['ASVspoof2019_' access_type '_dev/flac'],[filelist{i} '.flac']);
+    [x,fs] = audioread(filePath);
+    if strcmp(feature_type,'LFCC')
+        [stat,delta,double_delta] = extract_lfcc(x,fs,20,512,20);
+        devFeatureCell{i} = [stat delta double_delta]';
+    elseif strcmp(feature_type,'CQCC')
+        devFeatureCell{i} = cqcc(x, fs, 96, fs/2, fs/2^10, 16, 29, 'ZsdD');
+    end
+    % convert sys_id
+    switch sys_id{i}
+        case '-'
+            sys_id{i} = 0
+        case 'SS_1'
+            sys_id{i} = 1 
+        case 'SS_2'
+            sys_id{i} = 2
+        case 'SS_4'
+            sys_id{i} = 3
+        case 'US_1'
+            sys_id{i} = 4
+        case 'VC_1'
+            sys_id{i} = 5
+        case 'VC_4'
+            sys_id{i} = 6
+        otherwise
+            disp('error converting system id!')
+    end
+end
+% convert key
+data_y = strcmp(key,'bonafide');
+data_x = transpose(devFeatureCell);
+save(cache_file_name, 'filelist', 'data_x', 'data_y', 'sys_id', '-v7.3')
