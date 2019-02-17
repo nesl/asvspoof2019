@@ -75,11 +75,13 @@ class ConvModel(nn.Module):
         self.block7 = ResNetBlock(32, 32, False)
         self.block8 = ResNetBlock(32, 32, False)
         self.block9 = ResNetBlock(32, 32, False)
+        self.block10=  ResNetBlock(32, 32, False)
+        self.block11 = ResNetBlock(32, 32, False)
         self.lrelu = nn.LeakyReLU(0.01)
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(128, 128)
+        self.fc1 = nn.Linear(64, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -87,16 +89,21 @@ class ConvModel(nn.Module):
         x = x.unsqueeze(dim=1)
         out = self.conv1(x)
         out = self.block1(out)
-        out = self.block2(out)
-        out = self.block3(out)
+        #out = self.block2(out)
         out = self.mp(out)
-        out = self.block4(out)
+        out = self.block3(out)
+        #out = self.block4(out)
+        out = self.mp(out)
         out = self.block5(out)
-        out = self.block6(out)
+        #out = self.block6(out)
         out = self.mp(out)
         out = self.block7(out)
-        out = self.block8(out)
+        #out = self.block8(out)
+        out = self.mp(out)
         out = self.block9(out)
+        #out = self.block10(out)
+        out = self.mp(out)
+        out = self.block11(out)
         out = self.bn(out)
         out = self.lrelu(out)
         out = self.mp(out)
@@ -180,12 +187,12 @@ def train_epoch(data_loader, model, lr, device):
     train_accuracy = (num_correct/num_total)*100
     return running_loss, train_accuracy
 
-def get_mfcc(x):
-    s = librosa.core.stft(x, n_fft=3200, win_length=3200, hop_length=1600)
+def get_log_spectrum(x):
+    s = librosa.core.stft(x, n_fft=2048, win_length=2048, hop_length=512)
     a = np.abs(s)**2
-    melspect = librosa.feature.melspectrogram(S=a)
-    mfcc = librosa.feature.mfcc(S=librosa.power_to_db(melspect))
-    return mfcc
+    #melspect = librosa.feature.melspectrogram(S=a)
+    feat = librosa.power_to_db(a)
+    return feat
 
 def compute_mfcc_feats(x):
     mfcc = get_mfcc(x)
@@ -217,7 +224,7 @@ if __name__ == '__main__':
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
-        lambda x: compute_mfcc_feats(x),
+        lambda x: get_log_spectrum(x),
         #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])
