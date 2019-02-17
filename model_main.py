@@ -79,7 +79,7 @@ class ConvModel(nn.Module):
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(32*10, 128)
+        self.fc1 = nn.Linear(48*10, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -183,7 +183,8 @@ def train_epoch(data_loader, model, lr, device):
 def compute_mfcc_feats(x):
     mfcc = librosa.feature.mfcc(x, sr=16000, n_mfcc=24)
     delta = librosa.feature.delta(mfcc)
-    feats = np.concatenate((mfcc, delta), axis=0)
+    delta_delta = librosa.feature.delta(delta)
+    feats = np.concatenate((mfcc, delta, delta_delta), axis=0)
     return feats
 
 if __name__ == '__main__':
