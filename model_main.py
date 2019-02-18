@@ -80,8 +80,9 @@ class ConvModel(nn.Module):
         self.lrelu = nn.LeakyReLU(0.01)
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.20)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(64, 128)
+        self.fc1 = nn.Linear(128, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -89,21 +90,21 @@ class ConvModel(nn.Module):
         x = x.unsqueeze(dim=1)
         out = self.conv1(x)
         out = self.block1(out)
-        #out = self.block2(out)
+        out = self.block2(out)
         out = self.mp(out)
         out = self.block3(out)
-        #out = self.block4(out)
+        out = self.block4(out)
         out = self.mp(out)
         out = self.block5(out)
-        #out = self.block6(out)
+        out = self.block6(out)
         out = self.mp(out)
         out = self.block7(out)
-        #out = self.block8(out)
-        out = self.mp(out)
-        out = self.block9(out)
+        out = self.block8(out)
+        #out = self.mp(out)
+        #out = self.block9(out)
         #out = self.block10(out)
-        out = self.mp(out)
-        out = self.block11(out)
+        #out = self.mp(out)
+        #out = self.block11(out)
         out = self.bn(out)
         out = self.lrelu(out)
         out = self.mp(out)
@@ -111,6 +112,7 @@ class ConvModel(nn.Module):
         out = self.dropout(out)
         out = self.fc1(out)
         out = self.lrelu(out)
+        out = self.dropout2(out)
         out = self.fc2(out)
         out = self.logsoftmax(out)
         return out
@@ -194,6 +196,11 @@ def get_log_spectrum(x):
     feat = librosa.power_to_db(a)
     return feat
 
+def get_cqt_spectrum(x):
+    s = librosa.core.cqt(x, sr=16000)
+    feat = np.abs(s)**2
+    feat = librosa.power_to_db(feat)
+    return feat
 def compute_mfcc_feats(x):
     mfcc = get_mfcc(x)
     delta = librosa.feature.delta(mfcc)
@@ -224,7 +231,7 @@ if __name__ == '__main__':
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
-        lambda x: get_log_spectrum(x),
+        lambda x: get_cqt_spectrum(x),
         #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])

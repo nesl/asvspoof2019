@@ -19,10 +19,9 @@ python evaluate_tDCF_asvspoof19.py RESULTS_FILE scores/asv_dev.txt
 ```
 
 #### Current result
-
 CM SYSTEM
-   EER            =  0.14801 % (Equal error rate for countermeasure)
+   EER            =  2.36371 % (Equal error rate for countermeasure)
 
 TANDEM
-   min-tDCF       =  0.00444
+   min-tDCF       =  0.07283
 
