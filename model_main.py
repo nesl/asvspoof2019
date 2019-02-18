@@ -7,6 +7,8 @@ import sys
 import os
 import data_utils
 import numpy as np
+import scipy
+import resampy
 from torch import Tensor
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -79,7 +81,7 @@ class ConvModel(nn.Module):
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(32*10, 128)
+        self.fc1 = nn.Linear(1440, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -186,6 +188,28 @@ def compute_mfcc_feats(x):
     feats = np.concatenate((mfcc, delta), axis=0)
     return feats
 
+def compute_cqcc_feats(x):
+    # Calculate CQCC feature of a audio series.
+    sr = 16000
+    constant_q = librosa.cqt(y=x, sr=sr)
+    cqt_abs = np.abs(constant_q)
+    cqt_abs_square = cqt_abs ** 2
+    cqt_spec = librosa.amplitude_to_db(cqt_abs_square).astype('float32')
+    cqt_resampy_spec = cqcc_resample(cqt_spec, sr, 44000)
+    cqcc = scipy.fftpack.dct(cqt_resampy_spec, norm='ortho', axis=0)
+    return cqcc
+
+def cqcc_resample(s, fs_orig, fs_new, axis=0):
+    # implement the resample operation of CQCC
+    # s: np.ndarray, input spectrogram
+    # fs_orig: int, origin sample rate
+    # return s: np.ndarray, spectrogram after resampling
+    if int(fs_orig) != int(fs_new):
+        s = resampy.resample(s, sr_orig=fs_orig, sr_new=fs_new,
+                             axis=axis)
+    return s
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('ASVSpoof LA model')
     parser.add_argument('--eval', action='store_true', default=False,
@@ -210,7 +234,7 @@ if __name__ == '__main__':
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
-        lambda x: compute_mfcc_feats(x),
+        lambda x: compute_cqcc_feats(x),
         #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])

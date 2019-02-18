@@ -14,7 +14,7 @@ LOGICAL_DATA_ROOT = 'data_logical'
 
 
 ASVFile = collections.namedtuple('ASVFile',
-    ['speaker_id', 'file_name', 'path', 'sys_id', 'key'], verbose=False)
+    ['speaker_id', 'file_name', 'path', 'sys_id', 'key'])
 
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
