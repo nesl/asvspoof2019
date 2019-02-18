@@ -68,8 +68,8 @@ for i=1:length(filelist)
     if x_len >= max_len
         x = x(1:max_len);
     else % need to pad
-        num_repeats = (max_len / x_len)+1;
-        x_repeat = repmat(x,1,3);
+        num_repeats = floor(max_len / x_len)+1;
+        x_repeat = repmat(x,num_repeats,1);
         x= x_repeat(1:max_len);
     end
     
