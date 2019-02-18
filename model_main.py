@@ -194,6 +194,11 @@ def get_log_spectrum(x):
     feat = librosa.power_to_db(a)
     return feat
 
+def compute_spectrogram_phase(x):
+    s = librosa.core.stft(x, n_fft=2048, win_length=2048, hop_length=512)
+    mag, phase = librosa.magphase(s)
+    return phase
+
 def compute_mfcc_feats(x):
     mfcc = get_mfcc(x)
     delta = librosa.feature.delta(mfcc)
@@ -224,7 +229,7 @@ if __name__ == '__main__':
     feature_transform = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),
-        lambda x: get_log_spectrum(x),
+        lambda x: get_spectrogram_phase(x),
         #lambda x: librosa.feature.chroma_cqt(x, sr=16000, n_chroma=20),
         lambda x: Tensor(x)
         ])
