@@ -28,7 +28,7 @@ feature_type = 'CQCC'; % LFCC or CQCC
 %      |- ASVspoof2019_PA_train_v1/
 
 % pathToASVspoof2019Data = '/path/to/ASVspoof_root/';
-pathToASVspoof2019Data = '/home/ziqi/Desktop/asvspoof2019-cqcc';
+pathToASVspoof2019Data = '/home/ziqi/Desktop/asvspoof2019-cqcc-use-matlab';
 
 % pathToDatabase = fullfile(pathToASVspoof2019Data, access_type);
 pathToDatabase = fullfile(pathToASVspoof2019Data, 'data_logical');
@@ -36,76 +36,77 @@ trainProtocolFile = fullfile(pathToDatabase, horzcat('ASVspoof2019_', access_typ
 devProtocolFile = fullfile(pathToDatabase, horzcat('ASVspoof2019_', access_type, '_protocols'), horzcat('ASVspoof2019.', access_type, '.cm.dev.trl.txt'));
 
 
-%% Feature extraction for training data
-
-% read train protocol
-fileID = fopen(trainProtocolFile);
-protocol = textscan(fileID, '%s%s%s%s%s');
-fclose(fileID);
-
-% get file and label lists
-filelist = protocol{2};
-sys_id = protocol{4};
-key = protocol{5};
-
-% get indices of genuine and spoof files
-% bonafideIdx = find(strcmp(key,'bonafide'));
-% spoofIdx = find(strcmp(key,'spoof'));
-
-disp('Extracting features for training data...');
-dset_name = 'train';
-cache_file_name = fullfile(['cache_' dset_name '.mat']);
-
+% %% Feature extraction for training data
+% 
+% % read train protocol
+% fileID = fopen(trainProtocolFile);
+% protocol = textscan(fileID, '%s%s%s%s%s');
+% fclose(fileID);
+% 
+% % get file and label lists
+% filelist = protocol{2};
+% sys_id = protocol{4};
+% key = protocol{5};
+% 
+% % get indices of genuine and spoof files
+% % bonafideIdx = find(strcmp(key,'bonafide'));
+% % spoofIdx = find(strcmp(key,'spoof'));
+% 
+% disp('Extracting features for training data...');
+% dset_name = 'train';
+% cache_file_name = fullfile(['cache_' dset_name '.mat']);
+% 
+% % parfor i=1:length(filelist)
 % parfor i=1:length(filelist)
-for i=1:length(filelist)
-    % extract CQCC feature
-    filePath = fullfile(pathToDatabase,['ASVspoof2019_' access_type '_train/flac'],[filelist{i} '.flac']);
-    [x,fs] = audioread(filePath);
-    
-    % padding to make data-length = 64000(4s)
-    x_len = size(x,1);
-    max_len = 64000;
-    if x_len >= max_len
-        x = x(1:max_len);
-    else % need to pad
-        num_repeats = floor(max_len / x_len)+1;
-        x_repeat = repmat(x,num_repeats,1);
-        x= x_repeat(1:max_len);
-    end
-    
-    if strcmp(feature_type,'LFCC')
-        [stat,delta,double_delta] = extract_lfcc(x,fs,20,512,20);
-        trainFeatureCell{i} = [stat delta double_delta]';
-    elseif strcmp(feature_type,'CQCC')
-        trainFeatureCell{i} = cqcc(x, fs, 96, fs/2, fs/2^10, 16, 29, 'ZsdD');
-    end
-    % convert sys_id
-    switch sys_id{i}
-        case '-'
-            sys_id{i} = 0;
-        case 'SS_1'
-            sys_id{i} = 1;
-        case 'SS_2'
-            sys_id{i} = 2;
-        case 'SS_4'
-            sys_id{i} = 3;
-        case 'US_1'
-            sys_id{i} = 4;
-        case 'VC_1'
-            sys_id{i} = 5;
-        case 'VC_4'
-            sys_id{i} = 6;
-        otherwise
-            disp('error converting system id!')
-    end
-end
-% convert key
-data_y = strcmp(key,'bonafide');
-data_x = transpose(trainFeatureCell);
-save(cache_file_name, 'filelist', 'data_x', 'data_y', 'sys_id', '-v7.3')
+%     % extract CQCC feature
+%     filePath = fullfile(pathToDatabase,['ASVspoof2019_' access_type '_train/flac'],[filelist{i} '.flac']);
+%     [x,fs] = audioread(filePath);
+%     
+%     % padding to make data-length = 64000(4s)
+%     x_len = size(x,1);
+%     max_len = 64000;
+%     if x_len >= max_len
+%         x = x(1:max_len);
+%     else % need to pad
+%         num_repeats = floor(max_len / x_len)+1;
+%         x_repeat = repmat(x,num_repeats,1);
+%         x= x_repeat(1:max_len);
+%     end
+%     
+%     if strcmp(feature_type,'LFCC')
+%         [stat,delta,double_delta] = extract_lfcc(x,fs,20,512,20);
+%         trainFeatureCell{i} = [stat delta double_delta]';
+%     elseif strcmp(feature_type,'CQCC')
+%         trainFeatureCell{i} = cqcc(x, fs, 96, fs/2, fs/2^10, 16, 29, 'ZsdD');
+%     end
+%     % convert sys_id
+%     switch sys_id{i}
+%         case '-'
+%             sys_id{i} = 0;
+%         case 'SS_1'
+%             sys_id{i} = 1;
+%         case 'SS_2'
+%             sys_id{i} = 2;
+%         case 'SS_4'
+%             sys_id{i} = 3;
+%         case 'US_1'
+%             sys_id{i} = 4;
+%         case 'VC_1'
+%             sys_id{i} = 5;
+%         case 'VC_4'
+%             sys_id{i} = 6;
+%         otherwise
+%             disp('error converting system id!')
+%     end
+% end
+% % convert key
+% data_y = strcmp(key,'bonafide');
+% data_x = transpose(trainFeatureCell);
+% save(cache_file_name, 'filelist', 'data_x', 'data_y', 'sys_id', '-v7.3')
 
 %% Feature extraction and scoring of development data
 
+    
 % read dev protocol
 fileID = fopen(devProtocolFile);
 protocol = textscan(fileID, '%s%s%s%s%s');
@@ -124,32 +125,46 @@ disp('Extracting features for development data...');
 dset_name = 'dev';
 cache_file_name = fullfile(['cache_' dset_name '.mat']);
 
-parfor i=1:length(filelist)
+for i=1:length(filelist)
     % extract CQCC feature
     filePath = fullfile(pathToDatabase,['ASVspoof2019_' access_type '_dev/flac'],[filelist{i} '.flac']);
     [x,fs] = audioread(filePath);
+    
+    % padding to make data-length = 64000(4s)
+    x_len = size(x,1);
+    max_len = 64000;
+    if x_len >= max_len
+        x = x(1:max_len);
+    else % need to pad
+        num_repeats = floor(max_len / x_len)+1;
+        x_repeat = repmat(x,num_repeats,1);
+        x= x_repeat(1:max_len);
+    end
+    
     if strcmp(feature_type,'LFCC')
         [stat,delta,double_delta] = extract_lfcc(x,fs,20,512,20);
         devFeatureCell{i} = [stat delta double_delta]';
     elseif strcmp(feature_type,'CQCC')
         devFeatureCell{i} = cqcc(x, fs, 96, fs/2, fs/2^10, 16, 29, 'ZsdD');
     end
+    
+
     % convert sys_id
     switch sys_id{i}
         case '-'
-            sys_id{i} = 0
+            sys_id{i} = 0;
         case 'SS_1'
-            sys_id{i} = 1 
+            sys_id{i} = 1;
         case 'SS_2'
-            sys_id{i} = 2
+            sys_id{i} = 2;
         case 'SS_4'
-            sys_id{i} = 3
+            sys_id{i} = 3;
         case 'US_1'
-            sys_id{i} = 4
+            sys_id{i} = 4;
         case 'VC_1'
-            sys_id{i} = 5
+            sys_id{i} = 5;
         case 'VC_4'
-            sys_id{i} = 6
+            sys_id{i} = 6;
         otherwise
             disp('error converting system id!')
     end

@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader, Dataset
 import numpy as np
 from joblib import Parallel, delayed
 LOGICAL_DATA_ROOT = 'data_logical'
-
+import h5py
 
 ASVFile = collections.namedtuple('ASVFile',
     ['speaker_id', 'file_name', 'path', 'sys_id', 'key'])
@@ -41,9 +41,17 @@ class ASVDataset(Dataset):
             'ASVspoof2019.LA.cm.{}.txt'.format(self.protocols_fname))
         self.cache_fname = 'cache_{}.npy'.format(self.dset_name)
         self.transform = transform
+        self.matlab_cache_fname = 'cache_{}.mat'.format(self.dset_name)
+
         if os.path.exists(self.cache_fname):
             self.data_x, self.data_y, self.data_sysid, self.files_meta = torch.load(self.cache_fname)
+            print('Dataset loaded from cache ', self.matlab_cache_fname)
+        elif os.path.exists(self.matlab_cache_fname):
+            self.data_x, self.data_y, self.data_sysid = self.read_matlab_cache(self.matlab_cache_fname)
+            self.files_meta = self.parse_protocols_file(self.protocols_fname)
             print('Dataset loaded from cache ', self.cache_fname)
+            # torch.save((self.data_x, self.data_y, self.data_sysid, self.files_meta), self.cache_fname)
+            # print('Dataset saved to cache ', self.cache_fname)
         else:
             self.files_meta = self.parse_protocols_file(self.protocols_fname)
             data = list(map(self.read_file, self.files_meta))
@@ -85,6 +93,38 @@ class ASVDataset(Dataset):
         lines = open(protocols_fname).readlines()
         files_meta = map(self._parse_line, lines)
         return list(files_meta)
+
+    def read_matlab_cache(self, filepath):
+        f = h5py.File(filepath, 'r')
+        data_y = f["data_y"][0]
+        if "train" in filepath:
+            filename_index = f["filename"]
+        elif "dev" in filepath:
+            filename_index = f["filelist"]
+        else:
+            print("Error, no file name")
+        data_x_index = f["data_x"]
+        sys_id_index = f["sys_id"]
+        filename = []
+        data_x = []
+        sys_id = []
+        for i in range(0, data_x_index.shape[1]):
+            idx = data_x_index[0][i]
+            temp = f[idx]
+            data_x.append(np.array(temp).transpose())
+
+            idx = filename_index[0][i]
+            temp = list(f[idx])
+            temp_name = [chr(x[0]) for x in temp]
+            filename.append(''.join(temp_name))
+
+            idx = sys_id_index[0][i]
+            temp = f[idx]
+            sys_id.append(int(list(temp)[0][0]))
+        data_x = np.array(data_x)
+        data_y = np.array(data_y)
+
+        return data_x.astype(np.float32), data_y.astype(np.int64), sys_id
 
 if __name__ == '__main__':
     train_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=True)

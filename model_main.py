@@ -13,7 +13,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 from torchvision import transforms
 import librosa
-
+import math
 import torch
 from torch import nn 
 from tensorboardX import SummaryWriter
@@ -39,8 +39,10 @@ class ResNetBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(depth)
         self.lrelu = nn.LeakyReLU(0.01)
         self.dropout = nn.Dropout(0.5)
-        self.conv2 = nn.Conv2d(depth, depth, kernel_size=3, stride=1, padding=1)
-        self.conv11 = nn.Conv2d(in_depth, depth, kernel_size=3, stride=1, padding=1)
+        # self.conv2 = nn.Conv2d(depth, depth, kernel_size=3, stride=1, padding=1)
+        # self.conv11 = nn.Conv2d(in_depth, depth, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(depth, depth, kernel_size=3, stride=2, padding=1)
+        self.conv11 = nn.Conv2d(in_depth, depth, kernel_size=3, stride=2, padding=1)
         if not self.first :
             self.pre_bn = nn.BatchNorm2d(in_depth)
 
@@ -81,7 +83,7 @@ class ConvModel(nn.Module):
         self.bn = nn.BatchNorm2d(32)
         self.dropout = nn.Dropout(0.5)
         self.logsoftmax = nn.LogSoftmax(dim=1)
-        self.fc1 = nn.Linear(1440, 128)
+        self.fc1 = nn.Linear(512, 128)
         self.fc2 = nn.Linear(128, 2)
     
     def forward(self, x):
@@ -91,17 +93,17 @@ class ConvModel(nn.Module):
         out = self.block1(out)
         out = self.block2(out)
         out = self.block3(out)
-        out = self.mp(out)
+        # out = self.mp(out)
         out = self.block4(out)
         out = self.block5(out)
         out = self.block6(out)
-        out = self.mp(out)
-        out = self.block7(out)
-        out = self.block8(out)
-        out = self.block9(out)
+        # out = self.mp(out)
+        # out = self.block7(out)
+        # out = self.block8(out)
+        # out = self.block9(out)
         out = self.bn(out)
         out = self.lrelu(out)
-        out = self.mp(out)
+        # out = self.mp(out)
         out = out.view(batch_size, -1)
         out = self.dropout(out)
         out = self.fc1(out)
@@ -189,7 +191,6 @@ def compute_mfcc_feats(x):
     return feats
 
 def compute_cqcc_feats(x):
-    # Calculate CQCC feature of a audio series.
     sr = 16000
     constant_q = librosa.cqt(y=x, sr=sr)
     cqt_abs = np.abs(constant_q)
@@ -198,6 +199,7 @@ def compute_cqcc_feats(x):
     cqt_resampy_spec = cqcc_resample(cqt_spec, sr, 44000)
     cqcc = scipy.fftpack.dct(cqt_resampy_spec, norm='ortho', axis=0)
     return cqcc
+    
 
 def cqcc_resample(s, fs_orig, fs_new, axis=0):
     # implement the resample operation of CQCC
@@ -208,7 +210,6 @@ def cqcc_resample(s, fs_orig, fs_new, axis=0):
         s = resampy.resample(s, sr_orig=fs_orig, sr_new=fs_new,
                              axis=axis)
     return s
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('ASVSpoof LA model')

@@ -2,8 +2,92 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a37091-fbc1-45be-8f81-94adb2cd1751" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/baseline/cqcc_extraction.m" beforeDir="false" afterPath="$PROJECT_DIR$/baseline/cqcc_extraction.m" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/model_80_32_0.0015_cqcc_default/events.out.tfevents.1550450880.predator" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_0.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_1.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_10.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_11.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_12.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_13.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_14.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_15.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_16.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_17.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_18.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_19.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_2.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_20.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_21.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_22.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_23.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_24.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_25.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_26.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_27.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_28.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_29.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_3.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_30.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_31.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_32.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_33.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_34.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_35.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_36.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_37.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_38.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_39.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_4.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_40.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_41.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_42.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_43.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_44.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_45.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_46.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_47.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_48.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_49.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_5.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_50.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_51.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_52.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_53.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_54.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_55.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_56.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_57.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_58.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_59.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_6.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_60.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_61.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_62.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_63.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_64.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_65.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_66.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_67.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_68.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_69.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_7.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_70.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_71.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_72.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_73.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_74.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_75.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_76.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_77.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_78.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_79.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_8.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_80_32_0.0015_cqcc_default/epoch_9.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores/output_cqcc_default" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,12 +96,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="70">
-              <caret line="124" column="42" selection-start-line="124" selection-start-column="42" selection-end-line="124" selection-end-column="42" />
+            <state relative-caret-position="1207">
+              <caret line="89" column="30" selection-start-line="89" selection-start-column="30" selection-end-line="89" selection-end-column="30" />
               <folding>
                 <element signature="e#84#99#0" expanded="true" />
               </folding>
@@ -25,29 +109,33 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fuse_result.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="2" selection-start-column="2" selection-end-column="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/data_utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="172">
-              <caret line="64" column="26" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+            <state relative-caret-position="289">
+              <caret line="32" column="34" lean-forward="true" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
+              <folding>
+                <element signature="e#84#96#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>meta</find>
+      <find>0.5</find>
+      <find>resampy</find>
+      <find>float</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -56,34 +144,35 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/test_cqcc.py" />
         <option value="$PROJECT_DIR$/data_utils.py" />
         <option value="$PROJECT_DIR$/model_main.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="1707" />
-    <option name="y" value="75" />
-    <option name="width" value="1424" />
-    <option name="height" value="993" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="2170" />
+    <option name="y" value="114" />
+    <option name="width" value="1426" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="asvspoof2019-cqcc" type="b2602c69:ProjectViewProjectNode" />
-              <item name="asvspoof2019-cqcc" type="462c0819:PsiDirectoryNode" />
+              <item name="asvspoof2019-cqcc-use-matlab" type="b2602c69:ProjectViewProjectNode" />
+              <item name="asvspoof2019-cqcc-use-matlab" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="RunDashboard">
@@ -98,6 +187,83 @@
       </list>
     </option>
   </component>
+  <component name="RunManager" selected="Python.model_main">
+    <configuration name="data_utils" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="asvspoof2019-cqcc" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data_utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="model_main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="asvspoof2019-cqcc" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/model_main.py" />
+      <option name="PARAMETERS" value="--lr=0.0005 --num_epochs=100 --batch_size=32 --comment=cqcc_matlab" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_cqcc" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="asvspoof2019-cqcc" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_cqcc.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.data_utils" />
+      <item itemvalue="Python.model_main" />
+      <item itemvalue="Python.test_cqcc" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.model_main" />
+        <item itemvalue="Python.data_utils" />
+        <item itemvalue="Python.test_cqcc" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -111,30 +277,95 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="1707" y="75" width="1424" height="993" extended-state="0" />
+    <frame x="2170" y="114" width="1426" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2119013" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2173913" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3686934" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3995381" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="R Packages" />
-      <window_info anchor="right" id="R Graphics" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.3290993" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.3290993" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="R Graphics" order="3" />
+      <window_info anchor="right" id="R Packages" order="4" />
     </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="np.array(data_y).astype(np.int64)" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>np.array(data_y).astype(np.int64)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>np.array(data_x).astype(np.float32)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>sys_id[3000]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>int(list(temp)[0][0])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(temp)[0][0]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(temp)[0]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(temp)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>''.join(temp_name)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str1 = ''.join(temp_name)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/eval_metrics.py">
@@ -146,6 +377,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.7/site-packages/scipy/io/matlab/mio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="844">
+          <caret line="74" lean-forward="true" selection-start-line="74" selection-end-line="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.7/site-packages/h5py/_hl/selections.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="470" selection-start-line="470" selection-end-line="470" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_cqcc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.7/site-packages/h5py/_hl/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="135" selection-start-line="135" selection-end-line="135" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/fuse_result.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -153,19 +415,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data_utils.py">
+    <entry file="file://$PROJECT_DIR$/model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="64" column="26" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+        <state relative-caret-position="1207">
+          <caret line="89" column="30" selection-start-line="89" selection-start-column="30" selection-end-line="89" selection-end-column="30" />
+          <folding>
+            <element signature="e#84#99#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model_main.py">
+    <entry file="file://$PROJECT_DIR$/data_utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="70">
-          <caret line="124" column="42" selection-start-line="124" selection-start-column="42" selection-end-line="124" selection-end-column="42" />
+        <state relative-caret-position="289">
+          <caret line="32" column="34" lean-forward="true" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
           <folding>
-            <element signature="e#84#99#0" expanded="true" />
+            <element signature="e#84#96#0" expanded="true" />
           </folding>
         </state>
       </provider>
