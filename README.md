@@ -27,11 +27,12 @@ lr = 0.00005, num_epochs=99
 
 
 ```
-    CM SYSTEM
+CM SYSTEM
    EER            =  0.15698 % (Equal error rate for countermeasure)
 
 TANDEM
-   min-tDCF       =  0.00314
+   min-tDCF       =  0.00229
+
 ```
 
 
