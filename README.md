@@ -25,6 +25,7 @@ python evaluate_tDCF_asvspoof19.py RESULTS_FILE scores/asv_dev.txt
 #### Using Spectorgram feature
 lr = 0.00005, num_epochs=99
 
+python model_main.py --num_epochs=100 --track=logical --features=spect   --lr=0.00005
 
 ```
 CM SYSTEM
