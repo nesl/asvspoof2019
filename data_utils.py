@@ -11,15 +11,25 @@ from torch.utils.data import DataLoader, Dataset
 import numpy as np
 from joblib import Parallel, delayed
 LOGICAL_DATA_ROOT = 'data_logical'
-
+PHISYCAL_DATA_ROOT = 'data_physical'
 
 ASVFile = collections.namedtuple('ASVFile',
     ['speaker_id', 'file_name', 'path', 'sys_id', 'key'], verbose=False)
 
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
-    def __init__(self, data_root=LOGICAL_DATA_ROOT, transform=None, is_train=True, sample_size=None):
-        self.prefix = 'ASVspoof2019_LA'
+    def __init__(self, transform=None, 
+        is_train=True, sample_size=None, is_logical=True, feature_name=None):
+        if is_logical:
+            data_root = LOGICAL_DATA_ROOT
+            track =  'LA'
+        else:
+            data_root = PHISYCAL_DATA_ROOT
+            track = 'PA'
+        assert feature_name is not None, 'must provide feature name'
+        self.track = track
+        self.is_logical = is_logical
+        self.prefix = 'ASVspoof2019_{}'.format(track)
         self.sysid_dict = {
             '-': 0,  # bonafide speech
             'SS_1': 1, # Wavenet vocoder
@@ -27,7 +37,17 @@ class ASVDataset(Dataset):
             'SS_4': 3, # Conventional vocoder MERLIN
             'US_1': 4, # Unit selection system MaryTTS
             'VC_1': 5, # Voice conversion using neural networks
-            'VC_4': 6 # transform function-based voice conversion
+            'VC_4': 6, # transform function-based voice conversion
+            # For PA:
+            'AA':7,
+            'AB':8,
+            'AC':9,
+            'BA':10,
+            'BB':11,
+            'BC':12,
+            'CA':13,
+            'CB':14,
+            'CC': 15
         }
         self.sysid_dict_inv = {v:k for k,v in self.sysid_dict.items()}
         self.data_root = data_root
@@ -38,8 +58,8 @@ class ASVDataset(Dataset):
         self.files_dir = os.path.join(self.data_root, '{}_{}'.format(
             self.prefix, self.dset_name), 'flac')
         self.protocols_fname = os.path.join(self.protocols_dir,
-            'ASVspoof2019.LA.cm.{}.txt'.format(self.protocols_fname))
-        self.cache_fname = 'cache_{}.npy'.format(self.dset_name)
+            'ASVspoof2019.{}.cm.{}.txt'.format(track, self.protocols_fname))
+        self.cache_fname = 'cache_{}_{}_{}.npy'.format(self.dset_name, track, feature_name)
         self.transform = transform
         if os.path.exists(self.cache_fname):
             self.data_x, self.data_y, self.data_sysid, self.files_meta = torch.load(self.cache_fname)
@@ -86,9 +106,9 @@ class ASVDataset(Dataset):
         files_meta = map(self._parse_line, lines)
         return list(files_meta)
 
-if __name__ == '__main__':
-    train_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=True)
-    assert len(train_loader) == 25380, 'Incorrect size of training set.'
-    dev_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=False)
-    assert len(dev_loader) == 24844, 'Incorrect size of dev set.'
+#if __name__ == '__main__':
+#    train_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=True)
+#    assert len(train_loader) == 25380, 'Incorrect size of training set.'
+#    dev_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=False)
+#    assert len(dev_loader) == 24844, 'Incorrect size of dev set.'
 
