@@ -136,7 +136,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     track = args.track
     assert args.features in ['mfcc', 'spect'], 'Not supported feature'
-    model_tag = 'model_{}_{}_{}_{}'.format(track, args.features, args.num_epochs, args.batch_size, args.lr)
+    model_tag = 'model_{}_{}_{}_{}_{}'.format(track, args.features, args.num_epochs, args.batch_size, args.lr)
     if args.comment:
         model_tag = model_tag + '_{}'.format(args.comment)
     model_save_path = os.path.join('models', model_tag)

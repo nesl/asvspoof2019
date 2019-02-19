@@ -20,8 +20,18 @@ python evaluate_tDCF_asvspoof19.py RESULTS_FILE scores/asv_dev.txt
 
 #### Current result
 
-Epcoh 99:  EER = 2.23 , t-DCF = 0.06
+### Logical Track
 
-Old Model results: EER = 2.87, t-DCF = 0.08
+#### Using Spectorgram feature
+lr = 0.00005, num_epochs=99
 
-Fusion between epoch 99, and old model results : EER =1.91, and t-DCF = 0.054
+
+```
+    CM SYSTEM
+   EER            =  0.15698 % (Equal error rate for countermeasure)
+
+TANDEM
+   min-tDCF       =  0.00314
+```
+
+
