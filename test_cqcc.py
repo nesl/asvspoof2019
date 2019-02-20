@@ -6,7 +6,7 @@ voice = sf.read("/home/ziqi/Desktop/asvspoof2019-cqcc/data_logical/ASVspoof2019_
 x = mn.pad(voice[0])
 cqcc_feature = mn.compute_cqcc_feats(x)
 
-# prototype of the fuction that read matlan cahches
+# prototype of the fuction that read matlab cahches
 def read_matlab_cache(filepath):
     f = h5py.File(filepath,'r')
     data_y = f["data_y"][0]
