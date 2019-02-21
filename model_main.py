@@ -116,7 +116,8 @@ def get_log_spectrum(x):
 def compute_mfcc_feats(x):
     mfcc = librosa.feature.mfcc(x, sr=16000, n_mfcc=24)
     delta = librosa.feature.delta(mfcc)
-    feats = np.concatenate((mfcc, delta), axis=0)
+    delta2 = librosa.feature.delta(delta)
+    feats = np.concatenate((mfcc, delta, delta2), axis=0)
     return feats
 
 if __name__ == '__main__':
