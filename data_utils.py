@@ -10,11 +10,13 @@ import librosa
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
 from joblib import Parallel, delayed
+import h5py
+
 LOGICAL_DATA_ROOT = 'data_logical'
 PHISYCAL_DATA_ROOT = 'data_physical'
 
 ASVFile = collections.namedtuple('ASVFile',
-    ['speaker_id', 'file_name', 'path', 'sys_id', 'key'], verbose=False)
+    ['speaker_id', 'file_name', 'path', 'sys_id', 'key'])
 
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
@@ -22,7 +24,7 @@ class ASVDataset(Dataset):
         is_train=True, sample_size=None, is_logical=True, feature_name=None):
         if is_logical:
             data_root = LOGICAL_DATA_ROOT
-            track =  'LA'
+            track = 'LA'
         else:
             data_root = PHISYCAL_DATA_ROOT
             track = 'PA'
@@ -60,10 +62,21 @@ class ASVDataset(Dataset):
         self.protocols_fname = os.path.join(self.protocols_dir,
             'ASVspoof2019.{}.cm.{}.txt'.format(track, self.protocols_fname))
         self.cache_fname = 'cache_{}_{}_{}.npy'.format(self.dset_name, track, feature_name)
+        self.cache_matlab_fname = 'cache_{}_{}_{}.mat'.format(self.dset_name, track, feature_name)
         self.transform = transform
         if os.path.exists(self.cache_fname):
             self.data_x, self.data_y, self.data_sysid, self.files_meta = torch.load(self.cache_fname)
             print('Dataset loaded from cache ', self.cache_fname)
+        elif feature_name == 'cqcc':
+            if os.path.exists(self.cache_matlab_fname):
+                self.data_x, self.data_y, self.data_sysid = self.read_matlab_cache(self.cache_matlab_fname)
+                self.files_meta = self.parse_protocols_file(self.protocols_fname)
+                print('Dataset loaded from matlab cache ', self.cache_matlab_fname)
+                torch.save((self.data_x, self.data_y, self.data_sysid, self.files_meta),
+                           self.cache_fname, pickle_protocol=4)
+                print('Dataset saved to cache ', self.cache_fname)
+            else:
+                print("Matlab cache for cqcc feature do not exist.")
         else:
             self.files_meta = self.parse_protocols_file(self.protocols_fname)
             data = list(map(self.read_file, self.files_meta))
@@ -93,6 +106,7 @@ class ASVDataset(Dataset):
         data_x, sample_read = sf.read(meta.path)
         data_y = meta.key
         return data_x, float(data_y), meta.sys_id
+
     def _parse_line(self, line):
         tokens = line.strip().split(' ')
         return ASVFile(speaker_id=tokens[0],
@@ -106,7 +120,32 @@ class ASVDataset(Dataset):
         files_meta = map(self._parse_line, lines)
         return list(files_meta)
 
-#if __name__ == '__main__':
+    def read_matlab_cache(self, filepath):
+        f = h5py.File(filepath, 'r')
+        # filename_index = f["filename"]
+        # filename = []
+        data_x_index = f["data_x"]
+        sys_id_index = f["sys_id"]
+        data_x = []
+        data_y = f["data_y"][0]
+        sys_id = []
+        for i in range(0, data_x_index.shape[1]):
+            idx = data_x_index[0][i]  # data_x
+            temp = f[idx]
+            data_x.append(np.array(temp).transpose())
+            # idx = filename_index[0][i]  # filename
+            # temp = list(f[idx])
+            # temp_name = [chr(x[0]) for x in temp]
+            # filename.append(''.join(temp_name))
+            idx = sys_id_index[0][i]  # sys_id
+            temp = f[idx]
+            sys_id.append(int(list(temp)[0][0]))
+        data_x = np.array(data_x)
+        data_y = np.array(data_y)
+        return data_x.astype(np.float32), data_y.astype(np.int64), sys_id
+
+
+# if __name__ == '__main__':
 #    train_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=True)
 #    assert len(train_loader) == 25380, 'Incorrect size of training set.'
 #    dev_loader = ASVDataset(LOGICAL_DATA_ROOT, is_train=False)
