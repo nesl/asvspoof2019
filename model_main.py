@@ -16,10 +16,12 @@ import torch
 from torch import nn 
 from tensorboardX import SummaryWriter
 
-from models import SpectrogramModel, MFCCModel
+from models import SpectrogramModel, MFCCModel, CQCCModel
 from scipy.optimize import brentq
 from scipy.interpolate import interp1d
 from sklearn.metrics import roc_curve
+
+
 def pad(x, max_len=64000):
     x_len = x.shape[0]
     if x_len >= max_len:
@@ -29,9 +31,6 @@ def pad(x, max_len=64000):
     x_repeat = np.repeat(x, num_repeats)
     padded_x = x_repeat[:max_len]
     return padded_x
-
-
-
 
         
 def evaluate_accuracy(data_loader, model, device):
@@ -47,6 +46,7 @@ def evaluate_accuracy(data_loader, model, device):
         _, batch_pred = batch_out.max(dim=1)
         num_correct += (batch_pred == batch_y).sum(dim=0).item()
     return 100 * (num_correct / num_total)
+
 
 def produce_evaluation_file(dataset, model, device, save_path):
     data_loader = DataLoader(dataset, batch_size=32, shuffle=False)
@@ -80,6 +80,7 @@ def produce_evaluation_file(dataset, model, device, save_path):
                 fh.write('{} {}\n'.format(f, cm))
     print('Result saved to {}'.format(save_path))
 
+
 def train_epoch(data_loader, model, lr, device):
     running_loss = 0
     num_correct = 0.0
@@ -109,6 +110,7 @@ def train_epoch(data_loader, model, lr, device):
     train_accuracy = (num_correct/num_total)*100
     return running_loss, train_accuracy
 
+
 def get_log_spectrum(x):
     s = librosa.core.stft(x, n_fft=2048, win_length=2048, hop_length=512)
     a = np.abs(s)**2
@@ -116,12 +118,14 @@ def get_log_spectrum(x):
     feat = librosa.power_to_db(a)
     return feat
 
+
 def compute_mfcc_feats(x):
     mfcc = librosa.feature.mfcc(x, sr=16000, n_mfcc=24)
     delta = librosa.feature.delta(mfcc)
     delta2 = librosa.feature.delta(delta)
     feats = np.concatenate((mfcc, delta, delta2), axis=0)
     return feats
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('ASVSpoof LA model')
@@ -140,12 +144,12 @@ if __name__ == '__main__':
         os.mkdir('models')
     args = parser.parse_args()
     track = args.track
-    assert args.features in ['mfcc', 'spect'], 'Not supported feature'
+    assert args.features in ['mfcc', 'spect', 'cqcc'], 'Not supported feature'
     model_tag = 'model_{}_{}_{}_{}_{}'.format(track, args.features, args.num_epochs, args.batch_size, args.lr)
     if args.comment:
         model_tag = model_tag + '_{}'.format(args.comment)
     model_save_path = os.path.join('models', model_tag)
-    assert track in ['logical' , 'physical'], 'Invalid track given'
+    assert track in ['logical', 'physical'], 'Invalid track given'
     is_logical = (track == 'logical')
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
@@ -156,6 +160,10 @@ if __name__ == '__main__':
     elif args.features == 'spect':
         feature_fn = get_log_spectrum
         model_cls = SpectrogramModel
+    elif args.features == 'cqcc':
+        feature_fn = get_log_spectrum  # cqcc feature is extracted in Matlab script
+        model_cls = CQCCModel
+
     transforms = transforms.Compose([
         lambda x: pad(x),
         lambda x: librosa.util.normalize(x),

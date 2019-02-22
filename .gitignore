@@ -4,7 +4,14 @@ __pycache__
 # IPython
 .ipynb_checkpoints
 
+# Pycharm
+.idea
+
 # Data folders
 data_logical
 data_physical
 
+# Caches and Models
+models
+cache_*
+logs
