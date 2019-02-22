@@ -89,7 +89,7 @@ class ASVDataset(Dataset):
             self.data_x, self.data_y, self.data_sysid = map(list, zip(*data))
             if self.transform:
                 # self.data_x = list(map(self.transform, self.data_x)) 
-                self.data_x = Parallel(n_jobs=10, prefer='threads')(delayed(self.transform)(x) for x in self.data_x)
+                self.data_x = Parallel(n_jobs=4, prefer='threads')(delayed(self.transform)(x) for x in self.data_x)
             torch.save((self.data_x, self.data_y, self.data_sysid, self.files_meta), self.cache_fname)
             print('Dataset saved to cache ', self.cache_fname)
         if sample_size:
