@@ -19,17 +19,22 @@ ASVFile = collections.namedtuple('ASVFile',
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
     def __init__(self, transform=None, 
-        is_train=True, sample_size=None, is_logical=True, feature_name=None):
+        is_train=True, sample_size=None, is_logical=True, feature_name=None, is_eval=False):
         if is_logical:
             data_root = LOGICAL_DATA_ROOT
             track =  'LA'
         else:
             data_root = PHISYCAL_DATA_ROOT
             track = 'PA'
+        if is_eval:
+            data_root = os.path.join('eval_data', data_root)
         assert feature_name is not None, 'must provide feature name'
         self.track = track
         self.is_logical = is_logical
         self.prefix = 'ASVspoof2019_{}'.format(track)
+        v1_suffix = ''
+        if is_eval and track == 'PA':
+            v1_suffix='_v1'
         self.sysid_dict = {
             '-': 0,  # bonafide speech
             'SS_1': 1, # Wavenet vocoder
@@ -49,14 +54,15 @@ class ASVDataset(Dataset):
             'CB':14,
             'CC': 15
         }
+        self.is_eval = is_eval
         self.sysid_dict_inv = {v:k for k,v in self.sysid_dict.items()}
         self.data_root = data_root
-        self.dset_name = 'train' if is_train else 'dev'
-        self.protocols_fname ='train.trn' if is_train else 'dev.trl'
+        self.dset_name = 'eval' if is_eval else 'train' if is_train else 'dev'
+        self.protocols_fname = 'eval.trl' if is_eval else 'train.trn' if is_train else 'dev.trl'
         self.protocols_dir = os.path.join(self.data_root,
             '{}_protocols/'.format(self.prefix))
         self.files_dir = os.path.join(self.data_root, '{}_{}'.format(
-            self.prefix, self.dset_name), 'flac')
+            self.prefix, self.dset_name)+v1_suffix, 'flac')
         self.protocols_fname = os.path.join(self.protocols_dir,
             'ASVspoof2019.{}.cm.{}.txt'.format(track, self.protocols_fname))
         self.cache_fname = 'cache_{}_{}_{}.npy'.format(self.dset_name, track, feature_name)
@@ -90,11 +96,17 @@ class ASVDataset(Dataset):
         return x, y, self.files_meta[idx]
 
     def read_file(self, meta):
-        data_x, sample_read = sf.read(meta.path)
+        data_x, sample_rate = sf.read(meta.path)
         data_y = meta.key
         return data_x, float(data_y), meta.sys_id
     def _parse_line(self, line):
         tokens = line.strip().split(' ')
+        if self.is_eval:
+            return ASVFile(speaker_id='',
+                file_name=tokens[0],
+                path=os.path.join(self.files_dir, tokens[0] + '.flac'),
+                sys_id=0,
+                key=0)
         return ASVFile(speaker_id=tokens[0],
             file_name=tokens[1],
             path=os.path.join(self.files_dir, tokens[1] + '.flac'),

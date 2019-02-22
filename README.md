@@ -36,4 +36,28 @@ TANDEM
 
 ```
 
+#### Using MFCC features
 
+```
+python model_main.py --num_epochs=100 --track=logical --features=mfcc   --lr=0.00005
+```
+
+```
+CM SYSTEM
+   EER            =  2.31044 % (Equal error rate for countermeasure)
+
+TANDEM
+   min-tDCF       =  0.07365
+```
+
+### Physical Track
+```
+python model_main.py --num_epochs=100 --track=physical --features=spect   --lr=0.00005
+
+```
+
+### Using MFCC features
+```
+python model_main.py --num_epochs=100 --track=physical --features=mfcc   --lr=0.00005
+
+```

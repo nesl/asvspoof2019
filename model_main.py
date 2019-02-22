@@ -49,7 +49,7 @@ def evaluate_accuracy(data_loader, model, device):
     return 100 * (num_correct / num_total)
 
 def produce_evaluation_file(dataset, model, device, save_path):
-    data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    data_loader = DataLoader(dataset, batch_size=32, shuffle=False)
     num_correct = 0.0
     num_total = 0.0
     model.eval()
@@ -74,7 +74,10 @@ def produce_evaluation_file(dataset, model, device, save_path):
 
     with open(save_path, 'w') as fh:
         for f, s, k, cm in zip(fname_list, sys_id_list, key_list, score_list):
-            fh.write('{} {} {} {}\n'.format(f, s, k, cm))
+            if not dataset.is_eval:
+                fh.write('{} {} {} {}\n'.format(f, s, k, cm))
+            else:
+                fh.write('{} {}\n'.format(f, cm))
     print('Result saved to {}'.format(save_path))
 
 def train_epoch(data_loader, model, lr, device):
@@ -132,6 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('--comment', type=str, default=None, help='Comment to describe the saved mdoel')
     parser.add_argument('--track', type=str, default='logical')
     parser.add_argument('--features', type=str, default='spect')
+    parser.add_argument('--is_eval', action='store_true', default=False)
     if not os.path.exists('models'):
         os.mkdir('models')
     args = parser.parse_args()
@@ -161,7 +165,7 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     dev_set = data_utils.ASVDataset(is_train=False, is_logical=is_logical,
         transform=transforms,
-        feature_name=args.features)
+        feature_name=args.features, is_eval=args.is_eval)
     dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
     model = model_cls().to(device)
     print(args)
