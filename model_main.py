@@ -140,6 +140,7 @@ if __name__ == '__main__':
     parser.add_argument('--track', type=str, default='logical')
     parser.add_argument('--features', type=str, default='spect')
     parser.add_argument('--is_eval', action='store_true', default=False)
+    parser.add_argument('--eval_part', type=int, default=0)
     if not os.path.exists('models'):
         os.mkdir('models')
     args = parser.parse_args()
@@ -171,9 +172,10 @@ if __name__ == '__main__':
         lambda x: Tensor(x)
         ])
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    
     dev_set = data_utils.ASVDataset(is_train=False, is_logical=is_logical,
         transform=transforms,
-        feature_name=args.features, is_eval=args.is_eval)
+        feature_name=args.features, is_eval=args.is_eval, eval_part=args.eval_part)
     dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
     model = model_cls().to(device)
     print(args)

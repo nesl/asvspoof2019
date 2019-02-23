@@ -61,3 +61,16 @@ python model_main.py --num_epochs=100 --track=physical --features=spect   --lr=0
 python model_main.py --num_epochs=100 --track=physical --features=mfcc   --lr=0.00005
 
 ```
+
+########## Preparing submission
+
+for Dev track
+```
+python model_main.py --track=physical --model_path=./models/model_physical_spect_100_32_5e-05__2/epoch_59.pth --eval --eval_output=foo.txt
+```
+
+for Eval track
+```
+python model_main.py --track=physical --model_path=./models/model_physical_spect_100_32_5e-05__2/epoch_59.pth --eval --eval_output=foo.txt --is_eval --eval_part=0
+
+```

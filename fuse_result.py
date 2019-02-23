@@ -8,13 +8,22 @@ import argparse
 
 def read_frame(fname):
     data_np = np.genfromtxt(fname, dtype=str)
-    df = pd.DataFrame(index=data_np[:,0],data=data_np, columns=['fname', 'sysid', 'key', 'score'])
+    if data_np.shape[1] == 4:
+	    cols = ['fname', 'sysid', 'key', 'score']
+    else:
+	    cols = ['fname', 'score']
+
+    df = pd.DataFrame(index=data_np[:,0],data=data_np, columns=cols)
     df['score'] = df['score'].astype(np.float32, copy=False)
     return df
 
 def fuse(file_list):
     frames = [read_frame(f) for f in file_list]
-    result_df = pd.concat(frames).groupby(["fname", "sysid", "key"], as_index=False)["score"].mean()
+    if frames[0].shape[1] == 4:
+	    merge_cols = ['fname', 'sysid', 'key']
+    else:
+	    merge_cols = ['fname']
+    result_df = pd.concat(frames).groupby(merge_cols, as_index=False)["score"].mean()
     return result_df
     
 if __name__ == '__main__':
