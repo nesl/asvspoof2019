@@ -13,6 +13,8 @@ The ASVSpoof2019 dataset can be downloaded from the following link:
 python model_main.py --num_epochs=100 --track=[logical/physical] --features=[spect/mfcc/cqcc]   --lr=0.00005
 ```
 
+Please note that the CQCC features are computing using the Matlab code in [cqcc_extraction.m](./cqcc_extraction.m), so you need to run this file to generate cache files of CQCC featurs before attempting to traiin or evaluate models with CQCC features.
+
 #### To perform fusion of multiple results files
 ```
  python fuse_result.py --input FILE1 FILE2 FILE3 --output=RESULTS_FILE
@@ -25,10 +27,10 @@ Run the model on the evaluation dataset to generate a prediction file.
 python model_main.py --eval  --eval_output=RESULTS_FILE --model_path=CHECKPOINT_FILE
 ```
 
-Then compute the evaluation scores using:
+Then compute the evaluation scores using on the development dataset
 
 ```
-python evaluate_tDCF_asvspoof19.py RESULTS_FILE scores/asv_dev.txt 
+python evaluate_tDCF_asvspoof19.py RESULTS_FILE PATH_TO__asv_dev.txt 
 ```
 
 
