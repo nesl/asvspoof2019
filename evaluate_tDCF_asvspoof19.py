@@ -74,10 +74,10 @@ print('   Pmiss          = {:8.5f} % (False rejection rate of targets)'.format(P
 print('   1-Pmiss,spoof  = {:8.5f} % (Spoof false acceptance rate)'.format((1 - Pmiss_spoof_asv) * 100))
 
 print('\nCM SYSTEM')
-print('   EER            = {:8.5f} % (Equal error rate for countermeasure)'.format(eer_cm * 100))
+print('   EER            = {:8.9f} % (Equal error rate for countermeasure)'.format(eer_cm * 100))
 
 print('\nTANDEM')
-print('   min-tDCF       = {:8.5f}'.format(min_tDCF))
+print('   min-tDCF       = {:8.9f}'.format(min_tDCF))
 
 
 # Visualize ASV scores and CM scores
@@ -109,7 +109,7 @@ plt.xlabel('CM threshold index (operating point)')
 plt.ylabel('Norm t-DCF');
 plt.title('Normalized tandem t-DCF')
 plt.plot([np.min(CM_thresholds), np.max(CM_thresholds)], [1, 1], '--', color='black')
-plt.legend(('t-DCF', 'min t-DCF ({:.5f})'.format(min_tDCF), 'Arbitrarily bad CM (Norm t-DCF=1)'))
+plt.legend(('t-DCF', 'min t-DCF ({:.9f})'.format(min_tDCF), 'Arbitrarily bad CM (Norm t-DCF=1)'))
 plt.xlim([np.min(CM_thresholds), np.max(CM_thresholds)])
 plt.ylim([0, 1.5])
 

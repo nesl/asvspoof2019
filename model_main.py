@@ -13,7 +13,7 @@ from torchvision import transforms
 import librosa
 
 import torch
-from torch import nn 
+from torch import nn
 from tensorboardX import SummaryWriter
 
 from models import SpectrogramModel, MFCCModel, CQCCModel
@@ -32,7 +32,7 @@ def pad(x, max_len=64000):
     padded_x = x_repeat[:max_len]
     return padded_x
 
-        
+
 def evaluate_accuracy(data_loader, model, device):
     num_correct = 0.0
     num_total = 0.0
@@ -40,7 +40,7 @@ def evaluate_accuracy(data_loader, model, device):
     for batch_x, batch_y, batch_meta in data_loader:
         batch_size = batch_x.size(0)
         num_total += batch_size
-        batch_x =batch_x.to(device)
+        batch_x = batch_x.to(device)
         batch_y = batch_y.view(-1).type(torch.int64).to(device)
         batch_out = model(batch_x)
         _, batch_pred = batch_out.max(dim=1)
@@ -62,14 +62,17 @@ def produce_evaluation_file(dataset, model, device, save_path):
     for batch_x, batch_y, batch_meta in data_loader:
         batch_size = batch_x.size(0)
         num_total += batch_size
-        batch_x =batch_x.to(device)
+        batch_x = batch_x.to(device)
         batch_out = model(batch_x)
-        batch_score = (batch_out[:,1] - batch_out[:,0]).data.cpu().numpy().ravel()
-       
+        batch_score = (batch_out[:, 1] - batch_out[:, 0]
+                       ).data.cpu().numpy().ravel()
+
         # add outputs
         fname_list.extend(list(batch_meta[1]))
-        key_list.extend(['bonafide' if key == 1 else 'spoof' for key in list(batch_meta[4])])
-        sys_id_list.extend([dataset.sysid_dict_inv[s.item()] for s in list(batch_meta[3])])
+        key_list.extend(
+            ['bonafide' if key == 1 else 'spoof' for key in list(batch_meta[4])])
+        sys_id_list.extend([dataset.sysid_dict_inv[s.item()]
+                            for s in list(batch_meta[3])])
         score_list.extend(batch_score.tolist())
 
     with open(save_path, 'w') as fh:
@@ -94,7 +97,7 @@ def train_epoch(data_loader, model, lr, device):
         batch_size = batch_x.size(0)
         num_total += batch_size
         ii += 1
-        batch_x =batch_x.to(device)
+        batch_x = batch_x.to(device)
         batch_y = batch_y.view(-1).type(torch.int64).to(device)
         batch_out = model(batch_x)
         batch_loss = criterion(batch_out, batch_y)
@@ -102,7 +105,8 @@ def train_epoch(data_loader, model, lr, device):
         num_correct += (batch_pred == batch_y).sum(dim=0).item()
         running_loss += (batch_loss.item() * batch_size)
         if ii % 10 == 0:
-            sys.stdout.write('\r \t {:.2f}'.format((num_correct/num_total)*100))
+            sys.stdout.write('\r \t {:.2f}'.format(
+                (num_correct/num_total)*100))
         optim.zero_grad()
         batch_loss.backward()
         optim.step()
@@ -128,15 +132,18 @@ def compute_mfcc_feats(x):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser('ASVSpoof LA model')
+    parser = argparse.ArgumentParser('UCLANESL ASVSpoof2019  model')
     parser.add_argument('--eval', action='store_true', default=False,
-        help='eval mode')
-    parser.add_argument('--model_path', type=str, default=None, help='Model checkpoint')
-    parser.add_argument('--eval_output', type=str, default=None, help='Path to save the evaluation result')
+                        help='eval mode')
+    parser.add_argument('--model_path', type=str,
+                        default=None, help='Model checkpoint')
+    parser.add_argument('--eval_output', type=str, default=None,
+                        help='Path to save the evaluation result')
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--num_epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=0.0001)
-    parser.add_argument('--comment', type=str, default=None, help='Comment to describe the saved mdoel')
+    parser.add_argument('--comment', type=str, default=None,
+                        help='Comment to describe the saved mdoel')
     parser.add_argument('--track', type=str, default='logical')
     parser.add_argument('--features', type=str, default='spect')
     parser.add_argument('--is_eval', action='store_true', default=False)
@@ -146,7 +153,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     track = args.track
     assert args.features in ['mfcc', 'spect', 'cqcc'], 'Not supported feature'
-    model_tag = 'model_{}_{}_{}_{}_{}'.format(track, args.features, args.num_epochs, args.batch_size, args.lr)
+    model_tag = 'model_{}_{}_{}_{}_{}'.format(
+        track, args.features, args.num_epochs, args.batch_size, args.lr)
     if args.comment:
         model_tag = model_tag + '_{}'.format(args.comment)
     model_save_path = os.path.join('models', model_tag)
@@ -162,7 +170,7 @@ if __name__ == '__main__':
         feature_fn = get_log_spectrum
         model_cls = SpectrogramModel
     elif args.features == 'cqcc':
-        feature_fn = get_log_spectrum  # cqcc feature is extracted in Matlab script
+        feature_fn = None  # cqcc feature is extracted in Matlab script
         model_cls = CQCCModel
 
     transforms = transforms.Compose([
@@ -170,12 +178,12 @@ if __name__ == '__main__':
         lambda x: librosa.util.normalize(x),
         lambda x: feature_fn(x),
         lambda x: Tensor(x)
-        ])
+    ])
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    
+
     dev_set = data_utils.ASVDataset(is_train=False, is_logical=is_logical,
-        transform=transforms,
-        feature_name=args.features, is_eval=args.is_eval, eval_part=args.eval_part)
+                                    transform=transforms,
+                                    feature_name=args.features, is_eval=args.is_eval, eval_part=args.eval_part)
     dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
     model = model_cls().to(device)
     print(args)
@@ -191,16 +199,20 @@ if __name__ == '__main__':
         sys.exit(0)
 
     train_set = data_utils.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
-                feature_name=args.features)
+                                      feature_name=args.features)
 
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+    train_loader = DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True)
     num_epochs = args.num_epochs
     writer = SummaryWriter('logs/{}'.format(model_tag))
     for epoch in range(num_epochs):
-        running_loss, train_accuracy = train_epoch(train_loader, model, args.lr, device) 
+        running_loss, train_accuracy = train_epoch(
+            train_loader, model, args.lr, device)
         valid_accuracy = evaluate_accuracy(dev_loader, model, device)
         writer.add_scalar('train_accuracy', train_accuracy, epoch)
         writer.add_scalar('valid_accuracy', valid_accuracy, epoch)
         writer.add_scalar('loss', running_loss, epoch)
-        print('\n{} - {} - {:.2f} - {:.2f}'.format(epoch, running_loss, train_accuracy, valid_accuracy))
-        torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
+        print('\n{} - {} - {:.2f} - {:.2f}'.format(epoch,
+                                                   running_loss, train_accuracy, valid_accuracy))
+        torch.save(model.state_dict(), os.path.join(
+            model_save_path, 'epoch_{}.pth'.format(epoch)))
