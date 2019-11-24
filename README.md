@@ -1,6 +1,6 @@
 # Deep Residual Neural Networks for Audio Spoofing Detection
 
-This repo has an implemntation for our paper **Deep Residual Neural Networks for Audio Spoofing Detection**, this is also describes the solution of team **UCLANESL** in the [ASVSpoof 2019 competition](https://www.asvspoof.org/).
+This repo has an implementation for our paper **Deep Residual Neural Networks for Audio Spoofing Detection**, this is also describes the solution of team **UCLANESL** in the [ASVSpoof 2019 competition](https://www.asvspoof.org/).
 
 ## Dataset
 
